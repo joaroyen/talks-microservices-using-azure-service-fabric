@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Introduksjon til Azure Resource Manager Templates</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif);
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Droid Serif';
+      }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+      .remark-slide-content h1 { font-size: 3em; }
+      .remark-slide-content h2 { font-size: 2em; }
+      .remark-slide-content h3 { font-size: 1.6em; }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+      }
+      li, p { line-height: 1.618em; }
+      .red { color: #fa0000; }
+      .gray { color: #cccccc; }
+      .large { font-size: 2em; }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      code {
+        background: #e7e8e2;
+        border-radius: 5px;
+      }
+      .remark-code, .remark-inline-code { 
+        font-family: 'Ubuntu Mono'; 
+        line-height: 1.25em;
+      }
+      .remark-code-line-highlighted {
+         background-color: #373832; 
+      }
+      .pull-left {
+        float: left;
+        width: 47%;
+      }
+      .pull-right {
+        float: right;
+        width: 47%;
+      }
+      .pull-right ~ p {
+        clear: both;
+      }
+      #slideshow .slide .content code {
+        font-size: 0.8em;
+      }
+      #slideshow .slide .content pre code {
+        font-size: 0.9em;
+        padding: 15px;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 1.618em;
+      }
+
+      /* Slide-specific styling */
+      #slide-inverse .footnote {
+        bottom: 12px;
+        left: 20px;
+      }
+      #slide-how .slides {
+        font-size: 0.9em;
+        position: absolute;
+        top:  151px;
+        right: 140px;
+      }
+      #slide-how .slides h3 {
+        margin-top: 0.2em;
+      }
+      #slide-how .slides .first, #slide-how .slides .second {
+        padding: 1px 20px;
+        height: 90px;
+        width: 120px;
+        -moz-box-shadow: 0 0 10px #777;
+        -webkit-box-shadow: 0 0 10px #777;
+        box-shadow: 0 0 10px #777;
+      }
+      #slide-how .slides .first {
+        background: #fff;
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        z-index: 1;
+      }
+      #slide-how .slides .second {
+        position: relative;
+        background: #fff;
+        z-index: 0;
+      }
+
+      /* Two-column layout */
+      .left-column {
+        color: #777;
+        width: 20%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 75%;
+        float: right;
+        padding-top: 1em;
+      }
+
+      img {
+        max-width: 100%;
+        max-height: 450px;
+      }
+
+      .icon > img {
+        width: 43px;
+        height: 43px;
+      }
+
+      pre {
+        white-space: pre-wrap; 
+      }
+
+      @page {
+        size: 908px 681px;
+        margin: 0;
+      }
+
+      @media print {
+        .remark-slide-scaler {
+          width: 100% !important;
+          height: 100% !important;
+          transform: scale(1) !important;
+          top: 0 !important;
+          left: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+name: inverse
+layout: true
+class: center, middle, inverse
+
+---
+
+# Introduksjon til 
+# Mikrotjenester i Azure Service Fabric
+
+## Joar Øyen - Acando
+## @joaroyen
+## https://github.com/joaroyen
+
+???
+*Tittel*
+Mikrotjenester i Azure Service Fabric
+ 
+*Abstrakt*
+Denne presentasjonen er todelt: Første del er en innføring i hva mikrotjenester er, hvorfor dette er en arkitektur du må kunne noe om, og hva du må tenke på for å lykkes. Del to viser hvordan Azure Service Fabric kan løse flere av de nye utfordringene mikrotjenester bringer.
+
+Azure Service Fabric kan kjøre både i Microsoft Azure, i et on-premies cluster og på lokal utviklermaskin. Microsoft bruker Service Fabric selv i Azure SQL Database, Document DB og Bing for å forenkle utvikling av skalerbare og robuste tjenester.
+
+---
+
+layout: true
+class: center, middle
+
+---
+
+layout: false
+
+# Innhold
+
+1. Hva menes med mikrotjenester?
+2. Hvorfor bør du vurdere mikrotjenester?
+3. Hvordan utvikle og forvalte mikrotjenester
+4. Hvorfor er Azure Service Fabric en relevant teknologi?
+5. Demo
+6. Oppsummering
+
+---
+
+class: center, middle, inverse
+
+# Hvor stor er en mikrotjeneste?
+
+???
+
+Om dere ønsker å assosiere noe med "mikro" - tenk "mikroprosessor". Intel i7 består av ~2 milliarder transistorer.
+
+---
+
+class: center, middle, inverse
+
+# Hva er en mikrotjeneste?
+
+---
+
+class: center, middle, inverse
+
+# ~~Hva er en mikrotjeneste?~~
+# Hva er en autonom forretningstjeneste?
+
+???
+Har mye erfaring fra SOA
+Kun i oppstartsfasen av min reise med mikrotjenester
+
+---
+
+# Definisjon(er)
+
+* Arkitektur for distribuerte systemer
+
+---
+
+# Definisjon(er)
+
+* Arkitektur for distribuerte systemer
+* Noe et team som kan mettes av to pizzaer kan bygge på et par uker
+
+---
+
+# Definisjon(er)
+
+* Arkitektur for distribuerte systemer
+* Noe et team som kan mettes av to pizzaer kan bygge på et par uker
+* Små autonome tjenester som samarbeider
+
+---
+
+# Definisjon(er)
+
+* Arkitektur for distribuerte systemer
+* Noe et team som kan mettes av to pizzaer kan bygge på et par uker
+* *Relativt* små autonome tjenester som samarbeider
+
+---
+
+class: center, middle, inverse
+
+# Det finnes ikke én definisjon på hva en mikrotjeneste er
+
+---
+
+# Karakteristikker på mikrotjenester
+
+* Logikk og tilstand som er uavhengig versjonert, installert og skalert
+* Unikt navn og adresse
+* Kan kommunisere med andre mikrotjenester via definerte grensesnitt
+* Kjører i en eller annen form for konteiner
+* Robust og konsistent selv under feilsituasjoner
+* Utviklet og forvaltet av et autonomt team
+
+---
+
+class: center, middle, inverse
+
+# Hvorfor mikrotjenester?
+
+---
+
+# Kompleksitet vs. produktivitet
+
+![Kompleksitet vs. produktivitet](./img/productivity.png)
+
+Kilde: https://martinfowler.com/bliki/MicroservicePremium.html
+
+---
+
+# Fordeler med en mikrotjenestearkitektur
+
+* Ekstremt distribuert system
+* SOA gjort korrekt
+* Heterogent teknologimiljø
+  * Rett verktøy for rett jobb
+  * Prøve ut ny teknologi
+* Robuste og skalerbare
+* Automatisk utrulling og eventuelt tilbakerulling
+
+???
+
+Martin Fowler on distributed systems: Don't do it!
+
+---
+
+# Når...
+
+* du ikke kan levere ny funksjonalitet fordi du må vente på noen andre
+* løsningen i Visual Studio har vokst seg for stor
+* du har ytelsesutfordringer i hele eller deler av løsningen
+* nedetid ved oppgraderinger går ut over brukerne
+
+---
+
+# Hva med SOA?
+
+* Mikrotjenestearkitektur er en form for SOA
+* Hovedforskjellen er sterkere fokus på autonomi og høy kohesjon
+* Prefererer koreografi over orkestrering
+
+---
+
+# Hva med monolitter
+
+* Monolitter er ikke døde
+* Start gjerne med en monolitt om du ikke har full forståelse for domenet
+* En monolitt kan bli en mikrotjeneste om den tilbyr et api for andre mikrotjenester
+
+
+* Følg uansett SOLID prinsippene og eventuelt DDD da det blir enklere å splitte ut mikrotjeneste senere
+
+---
+
+class: center, middle, inverse
+
+# Hvordan designe mikrotjenester
+
+---
+
+# Ønskede egenskaper
+
+* Høy kohesjon
+  * gir autonome tjenester
+* Løse koblinger
+  * lar oss bytte ut deler av løsningen
+* Komposisjon
+  * lar oss sette sammen tjenester for å gi verdi til brukeren
+
+???
+
+No such thing as a free lunch!
+
+---
+
+# Utfordring
+
+![Utfordring](./img/utfordring.svg)
+
+---
+
+# Utfordring
+
+![Utfordring: mikrotjenester](./img/utfordring-mikrotjenester.svg)
+
+---
+
+# Utfordring
+
+![Utfordring: monolitt](./img/utfordring-monolitt.svg)
+
+
+---
+
+# Utfordring
+
+![Utfordring: silver bullet](./img/utfordring-silverbullet.svg)
+
+---
+
+# Analogi
+
+![Analogi: Elektroniske komponenter](./img/diode-1719908.svg)
+
+---
+
+# Analogi
+
+![Analogi: Elektronisk kaos](./img/electronics-759228_1280.jpg)
+
+---
+
+# Analogi
+
+![Analogi: Elektronisk krets](./img/circuit-1443256_1280.jpg)
+
+---
+
+# Analogi
+
+![Analogi: Elektronisk avfall](./img/e-waste-952438_1280.jpg)
+
+---
+
+# Analogi
+
+![Analogi: CPU](./img/intel-core-i7-5775c.jpg)
+
+---
+
+# Analogi
+
+![Analogi: Mother board](./img/rog_performance_3.png)
+
+
+---
+
+# Tjenestedesign
+
+* Domenedrevet design (DDD)
+  * Løse koblinger
+  * Høye kohesjon
+  * Start med bounded contexts på et høyt nivå
+* Tenk også på kommunikasjon inn og ut av tjenesten
+  * Request / response
+  * Hendelser
+* Komposisjon
+  * Fasader
+  * Orkestrering vs koreografi
+  * Eventual consistency
+
+---
+
+# Tjenestegrensesnitt
+
+* En (eventuelt et meget begrenset antall) API teknologier
+  * Valgt teknologi kan med fordel støttes av flere plattformer
+* Bakoverkompatibel til evig tid
+  * Ønskelig å fase ut gammel funksjonalitet over tid
+* Bør også være foroverkompatibel
+
+
+* Prefererer mer løse kontrakter og heller la tjenestene validere og håndtere avvik
+* Unngå deling av kode da det kan gi tettere koblinger en ønskelig
+
+---
+
+# Brukergrensesnitt
+
+* Selvstendige applikasjoner
+* Back-end-for-frontend: Komposisjon i en applikasjonstjeneste
+* Micro front-end: Komposisjon i brukergrensesnittet
+* Ikke lever brukergrensesnitt
+* Komposisjon i nettverksinfrastruktur
+
+
+* Start med tjenestedesign sett fra perspektivet til interaksjonsdesignere
+
+---
+
+# Sikkerhet
+
+* Identitet og tilgangsrettigheter er en mikrotjeneste i seg selv
+  * Brukeridentiteter
+  * Tjenesteidentiteter
+  * Tilgangsrettigheter
+* Tilgangskontroll må håndheves i hver enkelt mikrotjeneste
+  * Identitet til bruker og/eller tjeneste må flyte i hele systemet
+  * Tenancy
+  * Brukere og grupper
+  * Sporing
+* Konfidensialitet og integritet må sikres både innad i hver enkelt mikrotjeneste, men også fra tjeneste til tjeneste og mellom tjenester og konsumenter
+
+---
+
+# Robusthet
+
+* Både ved planlagt og ikke planlagt nedetid
+* Ingen utenforstående skal klare å ta ned en mikrotjeneste
+* Tiltak
+  * Duplisering
+  * Asynkron kommunikasjon
+  * Sikringer
+  * Backup / cache av informasjon
+
+---
+
+# Overvåking og drift
+
+* Helsesjekk
+* Sporbarhet
+* Innsamling og aggregering
+* Alarmer
+* Ressursjustering
+
+---
+
+# Forutsetninger for å lykkes
+
+* DDD og god domenekunnskap
+* Automasjonskultur for testing og dev-ops
+* Skjul alle implementasjonsdetaljer 
+* On-demand infrastruktur og plattformtjenester
+* Autonome utviklingsteam med mandat til å sette ting i produksjon
+* Overvåking
+* Ikke start med kjernetjenester, men den som et lite team kan utvikle på en uke eller to
+* Tenk tjenestedesign med interaksjonsdesigner hatten på
+
+---
+
+class: center, middle, inverse
+
+# Azure Service Fabric
+
+---
+
+# Azure Service Fabric
+
+![Azure Service Fabric](./img/azure-service-fabric.png)
+Kilde: https://channel9.msdn.com/Events/Build/2016/B874
+
+---
+
+# Kjøremiljø
+
+* Hoster
+  * Windows
+  * Linux (preview)
+* Gjester
+  * Kjørbar applikasjon / script
+  * Tilstandsløs .NET tjeneste
+  * .NET tjeneste med tilstand
+  * .NET aktør med tilstand
+  * Docker kontainer (preview)
+
+---
+
+# Basis kapabiliteter
+
+* Kjapp deployment
+* Automatisk plassering og aktivering
+* Partisjonering
+* Pålitelighet med automatisk failover
+* Høy ressursutnyttelse
+* Helsesjekk og rapportering
+* Rullerende oppgraderinger
+
+
+* Forvaltingsenheten er en Service Fabric Application
+
+---
+
+# Tilstandsløse tjenester
+
+* Tjeneste discovery
+* Dynamisk lastbalansering basert på konsumerte ressurser
+* Out-of-the-box typer fra .NET: Web API, WCF, .NET Core (preview)
+* Integrert utvikleropplevelse i Visual Studio: debugging, monitorering, pakking og utrulling
+
+---
+
+# Tjenester med tilstand
+
+* Pålitelige samlinger og køer
+* Høy ytelse, skalerbar og tilgjengelighet
+* Kjapp svartid
+* Aktør-rammeverk Out-of-the-box
+  * Virtuelle aktører
+  * Finnes alternativer som Orleans og Akka.NET
+
+---
+
+class: center, middle, inverse
+
+# Azure Service Fabric Demo
+
+---
+
+# Utfordringer med Azure Service Fabric
+
+* Krever minst 5 compute enheter i produksjon
+* Lett å få sterke koblinger til Service Fabric klasser
+* Ikke optimal utvikleropplevelse
+  * Debugging krever deployment
+  * Får ofte feilmelding om at eksisterende applikasjon er låst 
+  * Må prøve på nytt
+* Er ikke optimalt for enhetstesting
+  * Krever custom mocking av rammeverk
+  * Blir fort en integrasjonstest
+* Eventer fra aktører er "best-effort"
+
+---
+
+class: center, middle, inverse
+
+# Oppsummering
+
+---
+
+# Oppsummering
+
+* Hvis du er i tvil, start med en monolitt
+* Prinsippene bak mikrotjenester er uansett verdifulle
+  * Fokus på forretningsdomenet
+  * Autonome team
+  * Automatisert testing og utrulling
+  * Isoler feil
+* Azure Service Fabric løser utfordringer med skalering, robusthet, utrulling og overvåking
+  * Hjelper oss ikke med design og vi kan ende opp med en big-ball-of-mud smurt ut over et utall mikrotjenester
+
+
+  > So my primary guideline would be **don't even consider microservices unless you have a system that's too complex to manage as a monolith**.
+  > -- *Martin Fowler* https://www.martinfowler.com/bliki/MicroservicePremium.html
+
+---
+
+# Referanser
+
+* Microservices Resource Guide
+  https://www.martinfowler.com/microservices/
+* Microservices - a definition of this new architectural term
+  https://www.martinfowler.com/articles/microservices.html
+* Building Microservices: Designing Fine-Grained Systems
+  https://www.amazon.com/Building-Microservices-Designing-Fine-Grained-Systems-ebook/dp/B00T3N7XB4/ref=mt_kindle?_encoding=UTF8&me=
+* GOTO 2014 • Microservices • Martin Fowler
+  https://www.youtube.com/watch?v=wgdBVIX9ifA
+* GOTO 2015 • DDD & Microservices: At Last, Some Boundaries! • Eric Evans
+  https://www.youtube.com/watch?v=yPvef9R3k-M
+* Design modern microservice applications on Microsoft Azure Service Fabric
+  https://channel9.msdn.com/events/Ignite/2016/BRK3204
+* Service Fabric Web Reference Application
+  https://github.com/Azure-Samples/service-fabric-dotnet-web-reference-app
+ 
+---
+
+class: center, middle, inverse
+
+# Spørsmål?
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
